@@ -247,40 +247,56 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
     void TaxiCenter::runAllTrips(int currentTime, Udp &udp) {
         //for loop for running all the drivers to their destination(the path bt the BFS algorithm).
         int i;
-        int toMove =2;
+          char buffer[1024];
 
-        //buffer of the data
-        char buffer[1024];
-
-        //telling all the drivers to move - sending 1.
-        std::string serial_str1;
-        boost::iostreams::back_insert_device<std::string> inserter1(serial_str1);
-        boost::iostreams::stream<boost::iostreams::back_insert_device<std::string> >
-                s1(inserter1);
-        boost::archive::binary_oarchive oa(s1);
-        oa << toMove;
-        s1.flush();
+        int toMove ;
+//
+//        //buffer of the data
+//
+//
+//        //telling all the drivers to move - sending 1.
+//        std::string serial_str1;
+//        boost::iostreams::back_insert_device<std::string> inserter1(serial_str1);
+//        boost::iostreams::stream<boost::iostreams::back_insert_device<std::string> >
+//                s1(inserter1);
+//        boost::archive::binary_oarchive oa(s1);
+//        oa << toMove;
+//        s1.flush();
 
         //sending the driver
-        udp.sendData(serial_str1);
+//        udp.sendData(serial_str1);
+
         //getting the new location of the drivers.
         for (int i = 0; i < driversList.size(); i++) {
             //serialize the info of the driver(the client).
-            udp.reciveData(buffer, sizeof(buffer));
-
-            //receiving the tripInfo
-            string str(buffer, sizeof(buffer));
-            Node *newLocation;
-            boost::iostreams::basic_array_source<char> device1(str.c_str(),
-                                                               str.size());
-            boost::iostreams::stream<boost::iostreams::basic_array_source<char> >
-                    s2(device1);
-            boost::archive::binary_iarchive ia(s2);
-            ia >> newLocation;
+//            udp.reciveData(buffer, sizeof(buffer));
+//
+//            //receiving the tripInfo
+//            string str(buffer, sizeof(buffer));
+//            Node *newLocation;
+//            boost::iostreams::basic_array_source<char> device1(str.c_str(),
+//                                                               str.size());
+//            boost::iostreams::stream<boost::iostreams::basic_array_source<char> >
+//                    s2(device1);
+//            boost::archive::binary_iarchive ia(s2);
+//            ia >> newLocation;
             if (driversList[i]->isOccupied()) {
                 //setting trip info to the driver.
-                driversList[i]->setLocation(newLocation);
+//                driversList[i]->setLocation(newLocation);
                 //checks if the driver finished the trip
+                toMove = 1; //the sign that the current trip ended.
+                //telling all the drivers to move - sending 1.
+                std::string serial_str1;
+                boost::iostreams::back_insert_device<std::string> inserter1(
+                        serial_str1);
+                boost::iostreams::stream<boost::iostreams::back_insert_device<std::string> >
+                        s1(inserter1);
+                boost::archive::binary_oarchive oa(s1);
+                oa << toMove;
+                s1.flush();
+                //sending the driver
+                udp.sendData(serial_str1);
+
                 if ((*((Point *) driversList[i]->getLocation()->getValue())) ==
                     *((Point *) (driversList[i]->getCurrentTrip()->getEndingPoint()->getValue()))) {
                     driversList[i]->setOccupied(false);
