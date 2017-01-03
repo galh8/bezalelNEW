@@ -6,12 +6,12 @@
 #include "StandardCab.h"
 
 BOOST_CLASS_EXPORT_GUID(LuxuryCab,"LuxuryCab")
-BOOST_CLASS_EXPORT_GUID(StandardCab,"StandardCab")
 BOOST_CLASS_EXPORT_GUID(GridNode,"GridNode")
+BOOST_CLASS_EXPORT_GUID(StandardCab,"StandardCab")
 
 int main() {
     int timePassed = 0;
-
+    int serverOperation;
     int sizeX, sizeY;
     int numOfObstacles, obs_x, obs_y;
     int command;
@@ -54,7 +54,7 @@ do {
     cin>>command;
 
     switch (command) {
-        case 1:
+        case 1: {
             cin >> numOfDrivers;
             for (int i = 0; i < numOfDrivers; ++i) {
                 int driverVehicleID;
@@ -107,8 +107,9 @@ do {
 
             }
             break;
+        }
 
-        case 2:
+        case 2: {
             cin >> tripID;
             cin >> dummy;
             cin >> tripStart_x;
@@ -127,8 +128,9 @@ do {
             taxiCenter->receiveTripInfo(tripID, tripStart_x, tripStart_y, tripEnd_x,
                                         tripEnd_y, tripNumPassengers, tripTariff, tripStartTime);
             break;
+        }
 
-        case 3:
+        case 3: {
             cin >> vehicleID;
             cin >> dummy;
             cin >> vehicleType;
@@ -138,18 +140,39 @@ do {
             cin >> vehicleColor;
             taxiCenter->addTaxi(vehicleID, vehicleType, vehicleManufacturer, vehicleColor);
             break;
+        }
 
-        case 4:
+        case 4: {
             //the id of the driver we want to find.
             cin >> driverID;
             cout << taxiCenter->getDriverLocation(driverID)->valueString() << endl;
             break;
+        }
 
-        case 9:
-            taxiCenter->linkDriversTrips(timePassed,udp);
-            taxiCenter->runAllTrips(timePassed,udp);
+        case 7: {
+            //server operation 4 means the program finished.
+            serverOperation = 4;
+            //serialize the trip info
+            std::string serial_str5;
+            boost::iostreams::back_insert_device<std::string> inserter(serial_str5);
+            boost::iostreams::stream<boost::iostreams::back_insert_device<std::string> >
+                    s(inserter);
+            boost::archive::binary_oarchive ob(s);
+
+            ob << serverOperation;
+            s.flush();
+            //sending the server operation
+            udp.sendData(serial_str5);
+
+            break;
+        }
+
+        case 9: {
+            taxiCenter->linkDriversTrips(timePassed, udp);
+            taxiCenter->runAllTrips(timePassed, udp);
             ++timePassed;
             break;
+        }
 
 
     }

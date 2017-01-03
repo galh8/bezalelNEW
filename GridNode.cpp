@@ -3,7 +3,7 @@
 //
 
 #include "GridNode.h"
-#include <sstream>
+
 using namespace std;
 
 /**

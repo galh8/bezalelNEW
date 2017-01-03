@@ -247,44 +247,13 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
     void TaxiCenter::runAllTrips(int currentTime, Udp &udp) {
         //for loop for running all the drivers to their destination(the path bt the BFS algorithm).
         int i;
-          char buffer[1024];
-
+        char buffer[1024];
         int toMove ;
-//
-//        //buffer of the data
-//
-//
-//        //telling all the drivers to move - sending 1.
-//        std::string serial_str1;
-//        boost::iostreams::back_insert_device<std::string> inserter1(serial_str1);
-//        boost::iostreams::stream<boost::iostreams::back_insert_device<std::string> >
-//                s1(inserter1);
-//        boost::archive::binary_oarchive oa(s1);
-//        oa << toMove;
-//        s1.flush();
-
-        //sending the driver
-//        udp.sendData(serial_str1);
-
         //getting the new location of the drivers.
         for (int i = 0; i < driversList.size(); i++) {
-            //serialize the info of the driver(the client).
-//            udp.reciveData(buffer, sizeof(buffer));
-//
-//            //receiving the tripInfo
-//            string str(buffer, sizeof(buffer));
-//            Node *newLocation;
-//            boost::iostreams::basic_array_source<char> device1(str.c_str(),
-//                                                               str.size());
-//            boost::iostreams::stream<boost::iostreams::basic_array_source<char> >
-//                    s2(device1);
-//            boost::archive::binary_iarchive ia(s2);
-//            ia >> newLocation;
             if (driversList[i]->isOccupied()) {
-                //setting trip info to the driver.
-//                driversList[i]->setLocation(newLocation);
                 //checks if the driver finished the trip
-                toMove = 1; //the sign that the current trip ended.
+                toMove = 1; //GO!
                 //telling all the drivers to move - sending 1.
                 std::string serial_str1;
                 boost::iostreams::back_insert_device<std::string> inserter1(
@@ -297,28 +266,26 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
                 //sending the driver
                 udp.sendData(serial_str1);
 
+                udp.reciveData(buffer, sizeof(buffer));
+            //receiving the tripInfo
+            string str(buffer, sizeof(buffer));
+            Node *newLocation;
+            boost::iostreams::basic_array_source<char> device1(str.c_str(),
+                                                               str.size());
+            boost::iostreams::stream<boost::iostreams::basic_array_source<char> >
+                    s2(device1);
+            boost::archive::binary_iarchive ia(s2);
+            ia >> newLocation;
+            driversList[i]->setLocation(newLocation);
+
                 if ((*((Point *) driversList[i]->getLocation()->getValue())) ==
                     *((Point *) (driversList[i]->getCurrentTrip()->getEndingPoint()->getValue()))) {
                     driversList[i]->setOccupied(false);
                     //TODO We need to erase the trip (ended) from the list of trips..
                     driversList[i]->setTripInfo(NULL);
-                   // listOfTrips.erase(listOfTrips.begin());
-                    toMove = 2; //the sign that the current trip ended.
-                    //telling all the drivers to move - sending 1.
-                    std::string serial_str1;
-                    boost::iostreams::back_insert_device<std::string> inserter1(
-                            serial_str1);
-                    boost::iostreams::stream<boost::iostreams::back_insert_device<std::string> >
-                            s1(inserter1);
-                    boost::archive::binary_oarchive oa(s1);
-                    oa << toMove;
-                    s1.flush();
-                    //sending the driver
-                    udp.sendData(serial_str1);
-
                 }
             } else {
-                toMove = 2; //the sign that the current trip ended.
+                toMove =3; //the sign that the current trip ended.
                 //telling all the drivers to move - sending 1.
                 std::string serial_str1;
                 boost::iostreams::back_insert_device<std::string> inserter1(
@@ -336,39 +303,6 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
         }
 
     }
-
-///**
-// * running all the trips (that has a driver).
-// */
-//void TaxiCenter::runAllTrips() {
-//    //for loop for running all the drivers to their destination(the path bt the BFS algorithm).
-//    int i;
-//    double stepTurn;
-//    for(i=0; i<driversList.size(); i++) {
-//        if(driversList[i]->isOccupied()){
-//            TripInfo *driverCurrentTrip = driversList[i]->getCurrentTrip();
-//            vector<Node*> tripRoute = driverCurrentTrip->gettripRoute();
-//            //how much the taxi moves at each step.
-//            stepTurn = driversList[i]->getTaxiCabInfo()->getStepTurn();
-//            //moving the driver over the trip path.
-//            for(int j=0; j<tripRoute.size();j++) {
-//                driversList[i]->setLocation(tripRoute[j]);
-//                driversList[i]->getCurrentTrip()->setTotalMeters(stepTurn);
-//                driversList[i]->getTaxiCabInfo()->
-//                                updateKilometersPassed(stepTurn);
-//            }
-//            //the passengers ranking their driver.
-//            for(int j = 0; j<driverCurrentTrip->getNumOfPassengers(); j++) {
-//                driversList[i]->setAverageSatisfaction(rand() % 5 + 1);
-//            }
-//            //deletes the trip and set the driver to be unoccupied.
-//            driversList[i]->setOccupied(false);
-//            delete(driversList[i]->getCurrentTrip());
-//            driversList[i]->setTripInfo(NULL);
-//        }
-//    }
-//}
-
 /**
  * adding an obstacle to the map.
  * @param obsPoint - point with obstacles.

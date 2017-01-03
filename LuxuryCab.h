@@ -5,18 +5,8 @@
 #ifndef EX2AP_LUXURYCAB_H
 #define EX2AP_LUXURYCAB_H
 #include "TaxiCab.h"
-#include <boost/serialization/base_object.hpp>
 
-#include <boost/archive/tmpdir.hpp>
 
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
-
-#include <boost/serialization/base_object.hpp>
-#include <boost/serialization/utility.hpp>
-#include <boost/serialization/list.hpp>
-#include <boost/serialization/assume_abstract.hpp>
-#include <boost/serialization/export.hpp>
 
 class LuxuryCab: public TaxiCab {
     friend class boost::serialization::access;
@@ -37,5 +27,7 @@ public:
     double getStepTurn();
 
 };
+
+
 
 #endif //EX2AP_LUXURYCAB_H

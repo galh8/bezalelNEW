@@ -8,6 +8,7 @@
 #include "LuxuryCab.h"
 #include "StandardCab.h"
 #include "GridNode.h"
+#include "Socket.h"
 #include <unistd.h>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -26,15 +27,13 @@
 using namespace std;
 
 BOOST_CLASS_EXPORT_GUID(LuxuryCab,"LuxuryCab")
-BOOST_CLASS_EXPORT_GUID(StandardCab,"StandardCab")
 BOOST_CLASS_EXPORT_GUID(GridNode,"GridNode")
+BOOST_CLASS_EXPORT_GUID(StandardCab,"StandardCab")
 
 int main(int argc, char *argv[]) {
-    std::cout << "Hello, from client" << std::endl;
-
     //initialize the udp
-    Udp udp(0, atoi(argv[1]));
-    udp.initialize();
+    Socket* client = new Udp(0, atoi(argv[1]));
+    client->initialize();
 
     //Dummy variable for getting the ',' and '_'
     char dummy;
@@ -60,14 +59,9 @@ int main(int argc, char *argv[]) {
     cin >> dummy;
     cin >> driverVehicleID;
 
-
-
-
-
     //creating new driver
     Driver *driver = new Driver(driverID, driverAge, driverStatus,
                                                 driverExperience);
-
 
     //serialize the info of the driver(the client).
     std::string serial_str1;
@@ -79,7 +73,7 @@ int main(int argc, char *argv[]) {
     s1.flush();
 
     //sending the driver
-    udp.sendData(serial_str1);
+    client->sendData(serial_str1);
 
     //serialize the id of the taxi of the driver.
     std::string serial_str2;
@@ -91,10 +85,10 @@ int main(int argc, char *argv[]) {
     s2.flush();
 
     //sending the vehicleID of the taxi
-    udp.sendData(serial_str2);
+    client->sendData(serial_str2);
 
     //expecting a location
-    udp.reciveData(buffer, sizeof(buffer));
+    client->reciveData(buffer, sizeof(buffer));
 
     //receiving his location
     string str(buffer, sizeof(buffer));
@@ -109,7 +103,7 @@ int main(int argc, char *argv[]) {
     driver->setLocation(location);
 
     //expecting a taxi
-    udp.reciveData(buffer, sizeof(buffer));
+    client->reciveData(buffer, sizeof(buffer));
 
     //receiving the taxi cab of the driver.
     string str1(buffer, sizeof(buffer));
@@ -131,7 +125,7 @@ int main(int argc, char *argv[]) {
  */
     while (true){
     //reicives a command to server operation variable.
-    udp.reciveData(buffer, sizeof(buffer));
+    client->reciveData(buffer, sizeof(buffer));
     string str3(buffer, sizeof(buffer));
     boost::iostreams::basic_array_source<char> device3(str3.c_str(),
                                                        str3.size());
@@ -157,57 +151,36 @@ int main(int argc, char *argv[]) {
                 boost::archive::binary_oarchive ob(s6);
                 ob << driverLocation;
                 s6.flush();
-                //sending the vehicleID of the taxi
-                udp.sendData(serial_str3);
+                //sending the location of the driver after moving
+                client->sendData(serial_str3);
             }else {
                 driver->setOccupied(false);
                 driver->setTripInfo(NULL);
             }
         }
     //if server operation = 2 the program expecting to get new trip
-    } else if(serverOperation==2) { //we need to set a new trip info.
-        //expecting a tripInfo.
-        udp.reciveData(buffer, sizeof(buffer));
-        string str2(buffer, sizeof(buffer));
-        TripInfo* tripInfo;
-        boost::iostreams::basic_array_source<char> device2(str2.c_str(), str2.size());
-        boost::iostreams::stream<boost::iostreams::basic_array_source<char> >
-                s4(device2);
-        boost::archive::binary_iarchive ib(s4);
-        ib >> tripInfo;
-
-        //assigning the trip to the driver.
-        if(tripInfo!=NULL){
-            driver->setOccupied(true);
-            //setting trip info to the driver.
-            driver->setTripInfo(tripInfo);
-        }
+        } else if(serverOperation==2) { //we need to set a new trip info.
+            //expecting a tripInfo.
+            client->reciveData(buffer, sizeof(buffer));
+            string str2(buffer, sizeof(buffer));
+            TripInfo* tripInfo;
+            boost::iostreams::basic_array_source<char> device2(str2.c_str(), str2.size());
+            boost::iostreams::stream<boost::iostreams::basic_array_source<char> >
+                    s4(device2);
+            boost::archive::binary_iarchive ib(s4);
+            ib >> tripInfo;
+            //assigning the trip to the driver.
+            if(tripInfo!=NULL){
+                driver->setOccupied(true);
+                //setting trip info to the driver.
+                driver->setTripInfo(tripInfo);
+            }
+        }else if(serverOperation == 4) {
+        return 0;
     }
 
     }
 
-    return 0;
 }
-
-
-//    //expecting a tripInfo.
-//    udp.reciveData(buffer, sizeof(buffer));
-//
-//    //receiving the tripInfo
-//    string str2(buffer, sizeof(buffer));
-//    TripInfo* tripInfo;
-//    boost::iostreams::basic_array_source<char> device2(str2.c_str(), str2.size());
-//    boost::iostreams::stream<boost::iostreams::basic_array_source<char> >
-//            s4(device2);
-//    boost::archive::binary_iarchive ib(s4);
-//    ib >> tripInfo;
-//
-//    //setting trip info to the driver.
-//    if (tripInfo != NULL) {
-//        driver->setTripInfo(tripInfo);
-//        driver->setOccupied(true);
-//    }
-
-
 
 

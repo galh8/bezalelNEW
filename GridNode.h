@@ -40,4 +40,5 @@ public:
 };
 
 
+
 #endif //EX1TASK3_GRIDNODE_H

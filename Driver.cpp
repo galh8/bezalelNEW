@@ -183,8 +183,8 @@ void Driver::move() {
     double stepTurn = taxiCabInfo->getStepTurn();
     if (getCurrentTrip() != NULL) {
         //move as many times as the taxi allows
-        if (tripRoute.size() == 1) {
-            setLocation(tripRoute[0]);
+        if (tripRoute.size() == 2) {
+            setLocation(tripRoute[1]);
             getCurrentTrip()->setTotalMeters(1);
             getTaxiCabInfo()->updateKilometersPassed(1);
             tripRoute.erase(tripRoute.begin());
@@ -215,42 +215,5 @@ void Driver::move() {
 
 
 }
-
-/**
- * the drivers move as much he can move in one second.
- */
-//void Driver::move() {
-//    //get the route of the driver.
-//    vector<Node*> tripRoute = getCurrentTrip()->gettripRoute();
-//    double stepTurn = taxiCabInfo->getStepTurn();
-//    int i = -1;
-//    //moving the driver over the trip path.
-//    if (getCurrentTrip()->isFirstTime()) {
-//        getCurrentTrip()->setFirstTime(false);
-//        tripRoute.erase(tripRoute.begin());
-//        getCurrentTrip()->setTripRoute(tripRoute);
-//    } else {
-//        if (getCurrentTrip() != NULL) {
-//            //move as many times as the taxi allows
-//            for (i = 0; i < stepTurn; i++) {
-//                //checks if the route is bigger than 1
-//                if (tripRoute.size() != 0) {
-//                    setLocation(tripRoute[i]);
-//                    getCurrentTrip()->setTotalMeters(1);
-//                    getTaxiCabInfo()->updateKilometersPassed(1);
-//                    if (tripRoute.size() == 1)
-//                        break;
-//                }
-//            }
-//            //setting new starting point to the trip.
-//            //if i is -1 the driver didn't move
-//            tripRoute.erase(tripRoute.begin(), tripRoute.begin() + i -1 );
-//            getCurrentTrip()->setTripRoute(tripRoute);
-//        }
-//
-//    }
-//
-//
-//}
 
 
