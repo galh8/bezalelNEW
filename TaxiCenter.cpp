@@ -276,9 +276,11 @@ void TaxiCenter::linkDriversTrips(int currentTime,Socket* server) {
                     s2(device1);
             boost::archive::binary_iarchive ia(s2);
             ia >> newLocation;
-            //deletes last location before entering new one
-            //delete(driversList[i]->getLocation());
+
+            //deletes last location before entering new one TODO
+//            Node* locationToDelete = driversList[i]->getLocation();
             driversList[i]->setLocation(newLocation);
+//            delete(locationToDelete);
 
                 if ((*((Point *) driversList[i]->getLocation()->getValue())) ==
                     *((Point *) (driversList[i]->getCurrentTrip()->getEndingPoint()->getValue()))) {

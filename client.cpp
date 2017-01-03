@@ -176,6 +176,7 @@ int main(int argc, char *argv[]) {
                 //setting trip info to the driver.
                 driver->setTripInfo(tripInfo);
             }
+
         }else if(serverOperation == 4) {
 
         //deletes everything and exit client.
