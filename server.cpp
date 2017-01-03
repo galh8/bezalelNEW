@@ -47,8 +47,8 @@ int main() {
         taxiCenter->addMapObstacles(Point(obs_x, obs_y));
     }
     //Initializing socket.
-    Udp udp(1, 5555);
-    udp.initialize();
+    Socket* server = new Udp(1, 5555);
+    server->initialize();
     char buffer[1024];
 do {
     cin>>command;
@@ -61,7 +61,7 @@ do {
                 Driver *driver;
 
                 //receive the serialized driver from the client.
-                udp.reciveData(buffer, sizeof(buffer));
+                server->reciveData(buffer, sizeof(buffer));
                 string str2(buffer, sizeof(buffer));
                 //Deserialize the driver received from the client.
                 boost::iostreams::basic_array_source<char> device2(str2.c_str(), str2.size());
@@ -70,7 +70,7 @@ do {
                 ib >> driver;
 
                 //receive the serialized vehicleID from the client.
-                udp.reciveData(buffer, sizeof(buffer));
+                server->reciveData(buffer, sizeof(buffer));
                 string str(buffer, sizeof(buffer));
                 //Deserialize the vehcleID received from the client.
                 boost::iostreams::basic_array_source<char> device(str.c_str(), str.size());
@@ -90,7 +90,7 @@ do {
                 o << driverLocation;
                 s4.flush();
                 //sending the cab
-                udp.sendData(serial_str3);
+                server->sendData(serial_str3);
 
 
                 //serialize the info of the driver(the client).
@@ -103,7 +103,7 @@ do {
                 oa << taxiCab;
                 s1.flush();
                 //sending the cab
-                udp.sendData(serial_str1);
+                server->sendData(serial_str1);
 
             }
             break;
@@ -162,14 +162,14 @@ do {
             ob << serverOperation;
             s.flush();
             //sending the server operation
-            udp.sendData(serial_str5);
+            server->sendData(serial_str5);
 
             break;
         }
 
         case 9: {
-            taxiCenter->linkDriversTrips(timePassed, udp);
-            taxiCenter->runAllTrips(timePassed, udp);
+            taxiCenter->linkDriversTrips(timePassed, server);
+            taxiCenter->runAllTrips(timePassed, server);
             ++timePassed;
             break;
         }
@@ -177,6 +177,9 @@ do {
 
     }
 }while (command!=7);
+    //deletes everything
+    delete(taxiCenter);
+    delete(server);
     return 0;
 }
 

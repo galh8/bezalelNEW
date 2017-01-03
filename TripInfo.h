@@ -78,6 +78,7 @@ public:
     TripInfo(int driverId,Node *start, Node *dest, int currentNumOfPassengers,
              double currentTariff,int time);
     TripInfo();
+    ~TripInfo();
     int getRideID();
     double getTotalMeters();
     void updateMeters(double meters);

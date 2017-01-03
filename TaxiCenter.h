@@ -50,9 +50,9 @@ public:
 
     Driver* findClosestDriver(TripInfo* tripInfo);
 
-    void linkDriversTrips(int currentTime,Udp &udp);
+    void linkDriversTrips(int currentTime,Socket* server);
 
-    void runAllTrips(int currentTime,Udp &udp);
+    void runAllTrips(int currentTime,Socket* server);
 
     void addMapObstacles(Point obsPoint);
 

@@ -154,6 +154,7 @@ int main(int argc, char *argv[]) {
                 //sending the location of the driver after moving
                 client->sendData(serial_str3);
             }else {
+                delete(driver->getCurrentTrip());
                 driver->setOccupied(false);
                 driver->setTripInfo(NULL);
             }
@@ -170,12 +171,17 @@ int main(int argc, char *argv[]) {
             boost::archive::binary_iarchive ib(s4);
             ib >> tripInfo;
             //assigning the trip to the driver.
-            if(tripInfo!=NULL){
+            if(tripInfo != NULL){
                 driver->setOccupied(true);
                 //setting trip info to the driver.
                 driver->setTripInfo(tripInfo);
             }
         }else if(serverOperation == 4) {
+
+        //deletes everything and exit client.
+        delete(client);
+        delete(driver->getTaxiCabInfo());
+        delete(driver);
         return 0;
     }
 

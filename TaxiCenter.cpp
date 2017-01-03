@@ -175,7 +175,7 @@ const vector<Driver *> &TaxiCenter::getDriversList() const {
  * assign the trips to the drivers.
  * if there are more trips than drivers they wont be assigned.
  */
-void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
+void TaxiCenter::linkDriversTrips(int currentTime,Socket* server) {
 
     int serverOperation;
 
@@ -207,7 +207,7 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
             ob << serverOperation;
             s.flush();
             //sending the server operation
-            udp.sendData(serial_str);
+            server->sendData(serial_str);
 
 
             //serialize the trip info
@@ -220,7 +220,7 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
             oa << tripToSend;
             s1.flush();
             //sending the trip info
-            udp.sendData(serial_str1);
+            server->sendData(serial_str1);
         }else {
             // 3 means that the client shouldnt expect a trip.
             serverOperation = 3;
@@ -234,7 +234,7 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
             oa << serverOperation;
             s1.flush();
             //sending the server operation
-            udp.sendData(serial_str1);
+            server->sendData(serial_str1);
         }
 
         }
@@ -244,7 +244,7 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
 /**
  * running all the trips (that has a driver).
  */
-    void TaxiCenter::runAllTrips(int currentTime, Udp &udp) {
+    void TaxiCenter::runAllTrips(int currentTime, Socket* server) {
         //for loop for running all the drivers to their destination(the path bt the BFS algorithm).
         int i;
         char buffer[1024];
@@ -264,9 +264,9 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
                 oa << toMove;
                 s1.flush();
                 //sending the driver
-                udp.sendData(serial_str1);
+                server->sendData(serial_str1);
 
-                udp.reciveData(buffer, sizeof(buffer));
+                server->reciveData(buffer, sizeof(buffer));
             //receiving the tripInfo
             string str(buffer, sizeof(buffer));
             Node *newLocation;
@@ -276,6 +276,8 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
                     s2(device1);
             boost::archive::binary_iarchive ia(s2);
             ia >> newLocation;
+            //deletes last location before entering new one
+            //delete(driversList[i]->getLocation());
             driversList[i]->setLocation(newLocation);
 
                 if ((*((Point *) driversList[i]->getLocation()->getValue())) ==
@@ -296,7 +298,7 @@ void TaxiCenter::linkDriversTrips(int currentTime,Udp &udp) {
                 oa << toMove;
                 s1.flush();
                 //sending the driver
-                udp.sendData(serial_str1);
+                server->sendData(serial_str1);
             }
 
 
