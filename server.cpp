@@ -10,6 +10,7 @@ BOOST_CLASS_EXPORT_GUID(GridNode,"GridNode")
 BOOST_CLASS_EXPORT_GUID(StandardCab,"StandardCab")
 
 int main(int argc, char *argv[]) {
+    int p=1;//delete after.
     int timePassed = 0;
     int serverOperation;
     int sizeX, sizeY;
