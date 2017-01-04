@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
         taxiCenter->addMapObstacles(Point(obs_x, obs_y));
     }
     //Initializing socket.
-    Socket* server = new Udp(1, argv[1]);
+    Socket* server = new Udp(1, atoi(argv[1]));
     server->initialize();
     char buffer[1024];
 do {
