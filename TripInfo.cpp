@@ -152,3 +152,14 @@ void TripInfo::setIsAssigned(bool isAssigned) {
     TripInfo::isAssigned = isAssigned;
 }
 
+/**
+* destructor. deletes all the realated vectors.
+*/
+TripInfo::~TripInfo() {
+    int i;
+    for (i=0;i < tripRoute.size();i++) {
+        delete(tripRoute[i]);
+    }
+    delete(startingPoint);
+    delete(endingPoint);
+}
