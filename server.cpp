@@ -9,7 +9,7 @@ BOOST_CLASS_EXPORT_GUID(LuxuryCab,"LuxuryCab")
 BOOST_CLASS_EXPORT_GUID(GridNode,"GridNode")
 BOOST_CLASS_EXPORT_GUID(StandardCab,"StandardCab")
 
-int main() {
+int main(int argc, char *argv[]) {
     int timePassed = 0;
     int serverOperation;
     int sizeX, sizeY;
@@ -47,7 +47,7 @@ int main() {
         taxiCenter->addMapObstacles(Point(obs_x, obs_y));
     }
     //Initializing socket.
-    Socket* server = new Udp(1, 5555);
+    Socket* server = new Udp(1, argv[1]);
     server->initialize();
     char buffer[1024];
 do {
