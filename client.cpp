@@ -32,7 +32,7 @@ BOOST_CLASS_EXPORT_GUID(StandardCab,"StandardCab")
 
 int main(int argc, char *argv[]) {
     //initialize the udp
-    Socket* client = new Udp(0, atoi(argv[1]));
+    Socket* client = new Udp(0, atoi(argv[2]));
     client->initialize();
 
     //Dummy variable for getting the ',' and '_'
